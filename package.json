@@ -32,6 +32,7 @@
     "@notionhq/client": "^5.8.0"
   },
   "devDependencies": {
+    "@jest-mock/express": "^3.0.0",
     "@jhwelch/mmm-eslint-config": "^3.0.0",
     "eslint": "^9.39.2",
     "jest": "^30.2.0"

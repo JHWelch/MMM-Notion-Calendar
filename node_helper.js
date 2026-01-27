@@ -11,8 +11,21 @@ const { Client } = require('@notionhq/client');
 
 module.exports = NodeHelper.create({
   start () {
-    this.expressApp.get('/MMM-Notion-Calendar.ics', (req, res) => {
+    this.expressApp.get(
+      '/MMM-Notion-Calendar.ics',
+      this.handleRequest.bind(this),
+    );
+  },
 
+  async handleRequest (req, res) {
+    const { token, dataSourceId } = req.query;
+
+    const notion = new Client({
+      auth: token,
+    });
+
+    notion.dataSources.query({
+      data_source_id: dataSourceId,
     });
   },
 });

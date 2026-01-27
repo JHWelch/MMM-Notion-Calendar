@@ -10,5 +10,9 @@ const NodeHelper = require('node_helper');
 const { Client } = require('@notionhq/client');
 
 module.exports = NodeHelper.create({
+  start () {
+    this.expressApp.get('/MMM-Notion-Calendar.ics', (req, res) => {
 
+    });
+  },
 });

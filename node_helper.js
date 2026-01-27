@@ -25,9 +25,12 @@ module.exports = NodeHelper.create({
       auth: token,
     });
 
-    notion.dataSources.query({
+    const events = await notion.dataSources.query({
       data_source_id: dataSourceId,
     });
+
+    res.type('text/calendar');
+    res.send(this.eventsToIcs(events?.results ?? []));
   },
 
   eventsToIcs (notionEvents) {

@@ -1,11 +1,10 @@
 {
   "name": "MMM-Notion-Calendar",
   "version": "1.0.0",
-  "description": "A Magic Mirror Module to display tasks from a Notion Task database",
+  "description": "A Magic Mirror Module to display items from a Notion calendar database.",
   "keywords": [
     "notion",
-    "tasks",
-    "todo",
+    "calendar",
     "magic",
     "mirror",
     "mmm"

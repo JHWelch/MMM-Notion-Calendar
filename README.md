@@ -1,6 +1,8 @@
 # MMM-Notion-Calednar
 
-This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror/).
+This is a module for the [MagicMirror²](https://github.com/MagicMirrorOrg/MagicMirror/).
+
+This module provides an internal iCal feed of a Notion database that can be used in the [MagicMirror Calendar module](https://docs.magicmirror.builders/modules/calendar.html).
 
 TODO: Add screenshot
 
@@ -30,18 +32,32 @@ npm install --omit=dev
 6. Set "Capabilities" this app only requires
    1. Content Capabilities: Read Content
    2. User Capabilities: Read user information without email address
-7. In "Access" tab edit access and select your task database.
+7. In "Access" tab edit access and select your database.
 
 ### Data Source Id
 
-1. Open the page of your Task database.
+1. Open the page of your database.
 2. Open the table menu and select "Manage Data Sources"
 3. Select the desired data source and "Copy data source ID"
-4. Save for use in config (`dataSourceId`)
+4. Save for use in url (`dataSourceId`)
 
 ## Using the module
 
-TODO
+Add the following to the `modules` array in `config/config.js`. It does not require any configuration options. These will be passed in the URL of the calendar feed.
+
+```js
+{
+    module: 'MMM-Notion-Calendar',
+}
+```
+
+Add the following to the `calendars` array in the configuration of the default `calendar` module.
+
+```js
+{
+    url: 'http://localhost:8080/MMM-Notion-Calendar.ics?notionToken=YOUR_NOTION_TOKEN&dataSourceId=YOUR_DATA_SOURCE_ID',
+}
+```
 
 ## Development
 

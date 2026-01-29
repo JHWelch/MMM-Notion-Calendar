@@ -132,10 +132,13 @@ describe('handleRequest', () => {
 });
 
 describe('eventToIcs', () => {
-  it('converts notion objects to ics format', () => {
+  beforeEach(() => {
     jest
       .useFakeTimers()
       .setSystemTime(new Date('2026-01-12'));
+  });
+
+  it('converts notion objects to ics format', () => {
     const notionEvents = [
       {
         object: 'page',
@@ -158,5 +161,30 @@ describe('eventToIcs', () => {
     ];
 
     expect(helper.eventsToIcs(notionEvents)).toMatchSnapshot();
+  });
+
+  it('can use a custom name field', () => {
+    const notionEvents = [
+      {
+        object: 'page',
+        id: 'page-id',
+        properties: {
+          Event: { title: [{ text: { content: 'Event 1' } }] },
+          Status: { select: { name: 'In Progress' } },
+          Date: { date: { start: '2023-09-30' } },
+        },
+      },
+      {
+        object: 'page',
+        id: 'page-id-2',
+        properties: {
+          Event: { title: [{ text: { content: 'Event 2' } }] },
+          Status: { select: { name: 'Not started' } },
+          Date: { date: { start: '2023-10-01' } },
+        },
+      },
+    ];
+
+    expect(helper.eventsToIcs(notionEvents, 'Event')).toMatchSnapshot();
   });
 });

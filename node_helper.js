@@ -61,10 +61,10 @@ module.exports = NodeHelper.create({
     return { token, dataSourceId };
   },
 
-  eventsToIcs (notionEvents) {
+  eventsToIcs (notionEvents, nameField = 'Name') {
     const {value, error} = ics.createEvents(notionEvents.map((event) => ({
       uid: event.id,
-      title: event.properties.Name.title[0]?.text.content || 'No Title',
+      title: event.properties[nameField]?.title[0]?.text.content || 'No Title',
       start: event.properties.Date.date.start,
       end: event.properties.Date.date.end || event.properties.Date.date.start,
     })));

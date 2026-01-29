@@ -31,7 +31,7 @@ module.exports = NodeHelper.create({
     const events = await notion.dataSources.query({
       data_source_id: dataSourceId,
       filter: {
-        property: 'Date',
+        property: dateField,
         date: {
           is_not_empty: true,
         },

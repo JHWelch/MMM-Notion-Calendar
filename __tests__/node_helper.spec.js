@@ -169,6 +169,15 @@ describe('handleRequest', () => {
 
     expect(res.type).toHaveBeenCalledWith('text/calendar');
     expect(res.send).toHaveBeenCalledWith(helper.eventsToIcs(notionEvents, 'Name', 'EventDate'));
+    expect(query).toHaveBeenCalledWith({
+      data_source_id: 'test-datasource-id',
+      filter: {
+        property: 'EventDate',
+        date: {
+          is_not_empty: true,
+        },
+      },
+    });
   });
 
   it('will fail if not provided token', () => {

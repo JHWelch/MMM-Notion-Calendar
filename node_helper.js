@@ -93,8 +93,6 @@ module.exports = NodeHelper.create({
       date.getUTCFullYear(),
       date.getUTCMonth() + 1,
       date.getUTCDate(),
-      date.getUTCHours(),
-      date.getUTCMinutes(),
     ];
   },
 });

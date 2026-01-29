@@ -22,7 +22,7 @@ module.exports = NodeHelper.create({
     const input = this.validate(req, res);
     if (!input) { return; }
 
-    const { token, dataSourceId } = input;
+    const { token, dataSourceId, nameField } = input;
 
     const notion = new Client({
       auth: token,
@@ -39,11 +39,15 @@ module.exports = NodeHelper.create({
     });
 
     res.type('text/calendar');
-    res.send(this.eventsToIcs(events?.results ?? []));
+    res.send(this.eventsToIcs(events?.results ?? [], nameField));
   },
 
   validate (req, res) {
-    const { token, dataSourceId } = req.query;
+    const {
+      token,
+      dataSourceId,
+      nameField = 'Name',
+    } = req.query;
 
     if (!token) {
       res.status(422).send('"token" query parameter is required.');
@@ -58,7 +62,7 @@ module.exports = NodeHelper.create({
       return false;
     }
 
-    return { token, dataSourceId };
+    return { token, dataSourceId, nameField };
   },
 
   eventsToIcs (notionEvents, nameField = 'Name') {

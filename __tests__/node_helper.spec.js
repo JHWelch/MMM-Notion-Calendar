@@ -32,6 +32,9 @@ describe('start', () => {
 describe('handleRequest', () => {
   beforeEach(() => {
     query = jest.fn();
+    jest
+      .useFakeTimers()
+      .setSystemTime(new Date('2026-01-12'));
     Client.mockImplementation(() => ({
       dataSources: { query },
     }));
@@ -96,6 +99,41 @@ describe('handleRequest', () => {
 
     expect(res.type).toHaveBeenCalledWith('text/calendar');
     expect(res.send).toHaveBeenCalledWith(helper.eventsToIcs(notionEvents));
+  });
+
+  it('can customize the name field', async () => {
+    const notionEvents = [
+      {
+        object: 'page',
+        id: 'page-id',
+        properties: {
+          Event: { title: [{ text: { content: 'Task 1' } }] },
+          Status: { select: { name: 'In Progress' } },
+          Date: { date: { start: '2023-09-30' } },
+        },
+      },
+      {
+        object: 'page',
+        id: 'page-id-2',
+        properties: {
+          Event: { title: [{ text: { content: 'Task 2' } }] },
+          Status: { select: { name: 'Not started' } },
+          Date: { date: { start: '2023-10-01' } },
+        },
+      },
+    ];
+    query.mockImplementation(() => Promise.resolve({ results: notionEvents}));
+    const req = getMockReq({
+      query: {
+        token: 'test-notion-token',
+        dataSourceId: 'test-datasource-id',
+        nameField: 'Event',
+      },
+    });
+    await helper.handleRequest(req, res);
+
+    expect(res.type).toHaveBeenCalledWith('text/calendar');
+    expect(res.send).toHaveBeenCalledWith(helper.eventsToIcs(notionEvents, 'Event'));
   });
 
   it('will fail if not provided token', () => {

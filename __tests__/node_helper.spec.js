@@ -174,6 +174,46 @@ describe('handleRequest', () => {
     });
   });
 
+  it('can include page emojis', async () => {
+    const notionEvents = [
+      {
+        object: 'page',
+        id: 'page-id',
+        icon: { type: 'emoji', emoji: '📅' },
+        properties: {
+          Name: { title: [{ text: { content: 'Event 1' } }] },
+          Date: { date: { start: '2023-09-30' } },
+        },
+      },
+      {
+        object: 'page',
+        id: 'page-id-2',
+        icon: { type: 'emoji', emoji: '🎉' },
+        properties: {
+          Name: { title: [{ text: { content: 'Event 2' } }] },
+          Date: { date: { start: '2023-10-01' } },
+        },
+      },
+    ];
+    query.mockImplementation(() => Promise.resolve({ results: notionEvents}));
+    const req = getMockReq({
+      query: {
+        token: 'test-notion-token',
+        dataSourceId: 'test-datasource-id',
+        emojis: true,
+      },
+    });
+    await helper.handleRequest(req, res);
+
+    expect(res.type).toHaveBeenCalledWith('text/calendar');
+    expect(res.send).toHaveBeenCalledWith(helper.eventsToIcs(
+      notionEvents,
+      undefined,
+      undefined,
+      true,
+    ));
+  });
+
   it('will fail if not provided token', () => {
     const req = getMockReq({
       query: {
@@ -281,5 +321,35 @@ describe('eventToIcs', () => {
     ];
 
     expect(helper.eventsToIcs(notionEvents, 'Name', 'EventDate')).toMatchSnapshot();
+  });
+
+  it('can include the page emoji', () => {
+    const notionEvents = [
+      {
+        object: 'page',
+        id: 'page-id',
+        icon: { type: 'emoji', emoji: '📅' },
+        properties: {
+          Name: { title: [{ text: { content: 'Event 1' } }] },
+          Date: { date: { start: '2023-09-30' } },
+        },
+      },
+      {
+        object: 'page',
+        id: 'page-id-2',
+        icon: { type: 'emoji', emoji: '🎉' },
+        properties: {
+          Name: { title: [{ text: { content: 'Event 2' } }] },
+          Date: { date: { start: '2023-10-01' } },
+        },
+      },
+    ];
+
+    expect(helper.eventsToIcs(
+      notionEvents,
+      'Name',
+      'Date',
+      true,
+    )).toMatchSnapshot();
   });
 });

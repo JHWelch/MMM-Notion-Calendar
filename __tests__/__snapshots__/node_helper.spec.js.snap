@@ -1,5 +1,28 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`eventToIcs can include the page emoji 1`] = `
+"BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+PRODID:adamgibbons/ics
+METHOD:PUBLISH
+X-PUBLISHED-TTL:PT1H
+BEGIN:VEVENT
+UID:page-id
+SUMMARY:📅 Event 1
+DTSTAMP:20260112T000000Z
+DTSTART;VALUE=DATE:20230930
+END:VEVENT
+BEGIN:VEVENT
+UID:page-id-2
+SUMMARY:🎉 Event 2
+DTSTAMP:20260112T000000Z
+DTSTART;VALUE=DATE:20231001
+END:VEVENT
+END:VCALENDAR
+"
+`;
+
 exports[`eventToIcs can use a custom date field 1`] = `
 "BEGIN:VCALENDAR
 VERSION:2.0

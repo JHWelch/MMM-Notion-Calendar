@@ -22,7 +22,7 @@ module.exports = NodeHelper.create({
     const input = this.validate(req, res);
     if (!input) { return; }
 
-    const { token, dataSourceId, nameField, dateField } = input;
+    const { token, dataSourceId, nameField, dateField, emojis } = input;
 
     const notion = new Client({
       auth: token,
@@ -39,7 +39,12 @@ module.exports = NodeHelper.create({
     });
 
     res.type('text/calendar');
-    res.send(this.eventsToIcs(events?.results ?? [], nameField, dateField));
+    res.send(this.eventsToIcs(
+      events?.results ?? [],
+      nameField,
+      dateField,
+      emojis,
+    ));
   },
 
   validate (req, res) {
@@ -48,6 +53,7 @@ module.exports = NodeHelper.create({
       dataSourceId,
       nameField = 'Name',
       dateField = 'Date',
+      emojis = false,
     } = req.query;
 
     if (!token) {
@@ -63,19 +69,24 @@ module.exports = NodeHelper.create({
       return false;
     }
 
-    return { token, dataSourceId, nameField, dateField };
+    return { token, dataSourceId, nameField, dateField, emojis };
   },
 
-  eventsToIcs (notionEvents, nameField = 'Name', dateField = 'Date') {
-    const {value, error} = ics.createEvents(notionEvents.map((event) => ({
-      uid: event.id,
-      title: event.properties[nameField]?.title[0]?.text.content || 'No Title',
-      start: this.parseDate(event.properties[dateField].date.start),
-      end: this.parseDate(
+  eventsToIcs (notionEvents, nameField = 'Name', dateField = 'Date', emojis = false) {
+    const {value, error} = ics.createEvents(notionEvents.map((event) => {
+      const end = this.parseDate(
         event.properties[dateField].date.end
         || event.properties[dateField].date.start,
-      ),
-    })));
+      );
+      const start = this.parseDate(event.properties[dateField].date.start);
+
+      let title = event.properties[nameField]?.title[0]?.text.content || 'No Title';
+      if (emojis && event.icon && event.icon.type === 'emoji') {
+        title = `${event.icon.emoji} ${title}`;
+      }
+
+      return { uid: event.id, title, start, end };
+    }));
 
     if (error) {
       Log.error('Error creating ICS events:', error);

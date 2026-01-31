@@ -56,7 +56,11 @@
             return this.baseUrl && this.token && this.dataSourceId;
           },
           url() {
-            const baseUrl = this.baseUrl.trim() + '/MMM-Notion-Calendar.ics';
+            let baseUrl = this.baseUrl.trim();
+            if (baseUrl.endsWith('/')) {
+              baseUrl = baseUrl.slice(0, -1);
+            }
+            baseUrl += '/MMM-NotionCalendar.ics';
             const params = new URLSearchParams();
             params.append('token', this.token);
             params.append('dataSourceId', this.dataSourceId);
@@ -219,7 +223,7 @@
           <div
             x-show="filterError"
             :class="{
-              'text-red-500 bg-red-50 text-sm absolute bottom-0 w-full rounded-b py-1 px-2 border-b-2 border-r-2 border-l-2 flex justify-between items-center': true,
+              'text-red-500 bg-red-50 text-sm absolute bottom-0 w-full rounded-b py-1 px-2 border-b-2 border-r-2 border-l-2 flex justify-between items-center opacity-80': true,
               'border-violet-800': filterFocused,
               'border-violet-200': !filterFocused
             }"

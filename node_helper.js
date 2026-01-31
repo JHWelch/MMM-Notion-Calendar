@@ -22,23 +22,36 @@ module.exports = NodeHelper.create({
     const input = this.validate(req, res);
     if (!input) { return; }
 
-    const { token, dataSourceId, nameProperty, dateProperty, emojis } = input;
+    const {
+      token,
+      dataSourceId,
+      nameProperty,
+      dateProperty,
+      emojis,
+      customFilter,
+    } = input;
 
     const notion = new Client({
       auth: token,
     });
 
+    const baseFilter = {
+      property: dateProperty,
+      date: {
+        is_not_empty: true,
+      },
+    };
+    const filter = customFilter
+      ? { and: [baseFilter, customFilter]}
+      : baseFilter;
+
     const events = await notion.dataSources.query({
       data_source_id: dataSourceId,
-      filter: {
-        property: dateProperty,
-        date: {
-          is_not_empty: true,
-        },
-      },
+      filter,
     });
 
     res.type('text/calendar');
+    res.status(200);
     res.send(this.eventsToIcs(
       events?.results ?? [],
       nameProperty,
@@ -54,6 +67,7 @@ module.exports = NodeHelper.create({
       nameProperty = 'Name',
       dateProperty = 'Date',
       emojis = false,
+      filter = null,
     } = req.query;
 
     if (!token) {
@@ -69,7 +83,26 @@ module.exports = NodeHelper.create({
       return false;
     }
 
-    return { token, dataSourceId, nameProperty, dateProperty, emojis };
+    let customFilter = null;
+    if (filter) {
+      try {
+        customFilter = JSON.parse(filter);
+      } catch (_) {
+        res.status(422).send('"filter" query parameter is not valid JSON.');
+        Log.error('"filter" query parameter is not valid JSON.');
+
+        return false;
+      }
+    }
+
+    return {
+      token,
+      dataSourceId,
+      nameProperty,
+      dateProperty,
+      emojis,
+      customFilter,
+    };
   },
 
   eventsToIcs (notionEvents, nameProperty = 'Name', dateProperty = 'Date', emojis = false) {

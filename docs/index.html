@@ -22,6 +22,27 @@
           emojis: false,
           notification: null,
           notificationMessage: '',
+          rawFilter: '{}',
+          parsedFilter: {},
+          filterError: null,
+          filterFocused: false,
+          calculateFilter() {
+            this.filterError = null;
+
+            try {
+              const parsed = eval('(' + this.rawFilter + ')') ?? {};
+
+              if (!parsed || typeof parsed !== 'object') {
+                throw new Error('Filter must be an object');
+              }
+
+              this.parsedFilter = parsed;
+            } catch (e) {
+              this.filterError = 'Filter must be a valid object';
+
+              this.parsedFilter = {};
+            }
+          },
           notify() {
             if (this.notification) {
               clearTimeout(this.notification);
@@ -35,7 +56,11 @@
             return this.baseUrl && this.token && this.dataSourceId;
           },
           url() {
-            const baseUrl = this.baseUrl.trim() + '/MMM-Notion-Calendar.ics';
+            let baseUrl = this.baseUrl.trim();
+            if (baseUrl.endsWith('/')) {
+              baseUrl = baseUrl.slice(0, -1);
+            }
+            baseUrl += '/MMM-NotionCalendar.ics';
             const params = new URLSearchParams();
             params.append('token', this.token);
             params.append('dataSourceId', this.dataSourceId);
@@ -47,6 +72,9 @@
             }
             if (this.emojis) {
               params.append('emojis', 'true');
+            }
+            if (!this.filterError && Object.keys(this.parsedFilter).length > 0) {
+              params.append('filter', JSON.stringify(this.parsedFilter));
             }
 
             return [baseUrl, params.toString()].join('?');
@@ -166,6 +194,58 @@
           <span>
             Include Page Emojis
           </span>
+        </label>
+
+        <label class="block mt-4 mb-1 font-medium flex flex-col relative">
+          <div class="flex items-center mb-1 justify-between">
+            <span>Filter</span>
+
+            <a
+              href="https://developers.notion.com/reference/filter-data-source-entries"
+              target="_blank"
+              class="text-violet-500 underline ml-1"
+            >
+              Notion Filter Reference
+            </a>
+          </div>
+
+          <textarea
+            x-model="rawFilter"
+            @input.debounce.750="calculateFilter"
+            @focus="filterFocused = true"
+            @blur="filterFocused = false"
+            type="text"
+            name="filter"
+            placeholder="{}"
+            class="w-full border-2 border-violet-200 rounded px-2 py-1 focus:outline-none focus:border-violet-800 h-24 resize-y font-mono"
+          ></textarea>
+
+          <div
+            x-show="filterError"
+            :class="{
+              'text-red-500 bg-red-50 text-sm absolute bottom-0 w-full rounded-b py-1 px-2 border-b-2 border-r-2 border-l-2 flex justify-between items-center opacity-80': true,
+              'border-violet-800': filterFocused,
+              'border-violet-200': !filterFocused
+            }"
+          >
+            <span x-text="filterError"></span>
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+              />
+            </svg>
+
+          </div>
         </label>
 
         <button

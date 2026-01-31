@@ -214,6 +214,52 @@ describe('handleRequest', () => {
     ));
   });
 
+  it('can include additional filters', async () => {
+    query.mockImplementation(() => Promise.resolve({ results: []}));
+
+    const req = getMockReq({
+      query: {
+        token: 'test-notion-token',
+        dataSourceId: 'test-datasource-id',
+        filter: '{ "and": [ { "property": "Status", "status": { "does_not_equal": "Done" } }, { "property": "Status", "status": { "does_not_equal": "Wont Do" } } ] }',
+      },
+    });
+
+    await helper.handleRequest(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.type).toHaveBeenCalledWith('text/calendar');
+    expect(query).toHaveBeenCalledWith({
+      data_source_id: 'test-datasource-id',
+      filter: {
+        and: [
+          {
+            property: 'Date',
+            date: {
+              is_not_empty: true,
+            },
+          },
+          {
+            and: [
+              {
+                property: 'Status',
+                status: {
+                  does_not_equal: 'Done',
+                },
+              },
+              {
+                property: 'Status',
+                status: {
+                  does_not_equal: 'Wont Do',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
   it('will fail if not provided token', () => {
     const req = getMockReq({
       query: {
@@ -244,6 +290,23 @@ describe('handleRequest', () => {
     expect(res.status).toHaveBeenCalledWith(422);
     expect(res.send).toHaveBeenCalledWith('"dataSourceId" query parameter is required.');
     expect(Log.error).toHaveBeenCalledWith('"dataSourceId" query parameter is required.');
+  });
+
+  it('will fail if filter is not valid JSON', () => {
+    const req = getMockReq({
+      query: {
+        token: 'test-notion-token',
+        dataSourceId: 'test-datasource-id',
+        filter: '{ "invalid": json }',
+      },
+    });
+
+    helper.handleRequest(req, res);
+
+    expect(Client).not.toHaveBeenCalled();
+    expect(query).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(422);
+    expect(res.send).toHaveBeenCalledWith('"filter" query parameter is not valid JSON.');
   });
 });
 

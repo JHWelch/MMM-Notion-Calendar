@@ -214,6 +214,52 @@ describe('handleRequest', () => {
     ));
   });
 
+  it('can include additional filters', async () => {
+    query.mockImplementation(() => Promise.resolve({ results: []}));
+
+    const req = getMockReq({
+      query: {
+        token: 'test-notion-token',
+        dataSourceId: 'test-datasource-id',
+        filter: '{ "and": [ { "property": "Status", "select": { "does_not_equal": "Done" } }, { "property": "Status", "select": { "does_not_equal": "Wont Do" } } ] }',
+      },
+    });
+
+    await helper.handleRequest(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.type).toHaveBeenCalledWith('text/calendar');
+    expect(query).toHaveBeenCalledWith({
+      data_source_id: 'test-datasource-id',
+      filter: {
+        and: [
+          {
+            property: 'Date',
+            date: {
+              is_not_empty: true,
+            },
+          },
+          {
+            and: [
+              {
+                property: 'Status',
+                select: {
+                  does_not_equal: 'Done',
+                },
+              },
+              {
+                property: 'Status',
+                select: {
+                  does_not_equal: 'Wont Do',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
   it('will fail if not provided token', () => {
     const req = getMockReq({
       query: {

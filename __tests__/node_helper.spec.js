@@ -221,7 +221,7 @@ describe('handleRequest', () => {
       query: {
         token: 'test-notion-token',
         dataSourceId: 'test-datasource-id',
-        filter: '{ "and": [ { "property": "Status", "select": { "does_not_equal": "Done" } }, { "property": "Status", "select": { "does_not_equal": "Wont Do" } } ] }',
+        filter: '{ "and": [ { "property": "Status", "status": { "does_not_equal": "Done" } }, { "property": "Status", "status": { "does_not_equal": "Wont Do" } } ] }',
       },
     });
 
@@ -243,13 +243,13 @@ describe('handleRequest', () => {
             and: [
               {
                 property: 'Status',
-                select: {
+                status: {
                   does_not_equal: 'Done',
                 },
               },
               {
                 property: 'Status',
-                select: {
+                status: {
                   does_not_equal: 'Wont Do',
                 },
               },

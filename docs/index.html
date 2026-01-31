@@ -9,7 +9,7 @@
   </head>
 
   <body>
-    <div class="p-4 bg-violet-300 min-h-screen">
+    <div class="py-4 px-2 p bg-violet-300 min-h-screen">
       <h1 class="text-2xl font-bold mb-4">MMM-NotionCalendar</h1>
       <form
         @submit.prevent
@@ -60,9 +60,100 @@
           </a>
         </p>
 
+        <label class="block mt-4 mb-1 font-medium flex flex-col">
+          <span>
+            Base URL
+
+            <span class="text-red-500">*</span>
+          </span>
+
+          <input
+            x-model="baseUrl"
+            type="text"
+            name="baseUrl"
+            class="w-full border-2 border-violet-200 rounded px-2 py-1 focus:outline-none focus:border-violet-800"
+            required
+          >
+        </label>
+
+        <label class="block mt-4 mb-1 font-medium flex flex-col">
+          <span>
+            Notion Integration Token
+
+            <span class="text-red-500">*</span>
+          </span>
+
+          <input
+            x-model="token"
+            type="text"
+            name="token"
+            placeholder="Integration Token"
+            class="w-full border-2 border-violet-200 rounded px-2 py-1 focus:outline-none focus:border-violet-800"
+            required
+          >
+        </label>
+
+        <label class="block mt-4 mb-1 font-medium flex flex-col">
+          <span>
+            Notion data Source Id
+
+            <span class="text-red-500">*</span>
+          </span>
+
+          <input
+            x-model="dataSourceId"
+            type="text"
+            name="dataSourceId"
+            placeholder="Data source id"
+            class="w-full border-2 border-violet-200 rounded px-2 py-1 focus:outline-none focus:border-violet-800"
+            required
+          >
+        </label>
+
+        <label class="block mt-4 mb-1 font-medium flex flex-col">
+          <span>
+            Name Property
+          </span>
+
+          <input
+            x-model="nameProperty"
+            type="text"
+            name="nameProperty"
+            placeholder="Name"
+            class="w-full border-2 border-violet-200 rounded px-2 py-1 focus:outline-none focus:border-violet-800"
+          >
+        </label>
+
+        <label class="block mt-4 mb-1 font-medium flex flex-col">
+          <span>
+            Date Property
+          </span>
+
+          <input
+            x-model="dateProperty"
+            type="text"
+            name="dateProperty"
+            placeholder="Date"
+            class="w-full border-2 border-violet-200 rounded px-2 py-1 focus:outline-none focus:border-violet-800"
+          >
+        </label>
+
+        <label class="block mt-4 mb-1 font-medium flex space-x-1 items-center pl-1">
+          <input
+            x-model="emojis"
+            type="checkbox"
+            name="emojis"
+            class="focus:ring-violet-500 focus:outline-none focus:ring-2 rounded-lg"
+          >
+
+          <span>
+            Include Page Emojis
+          </span>
+        </label>
+
         <button
           :class="{
-            'flex items-center justify-between p-2 bg-violet-100 rounded font-mono w-full text-violet-900 my-4': true,
+            'flex items-center justify-between p-2 bg-violet-100 rounded font-mono w-full text-violet-900 my-4 border-2 border-transparent focus:border-violet-500 focus:outline-none': true,
             'cursor-pointer': enabled(),
             'opacity-50 cursor-not-allowed': !enabled()
           }"
@@ -89,88 +180,6 @@
             </svg>
           </div>
         </button>
-
-        <label class="block mt-4 mb-1 font-medium flex flex-col">
-          <span>
-            Base URL
-
-            <span class="text-red-500">*</span>
-          </span>
-
-          <input
-            x-model="baseUrl"
-            type="text"
-            name="baseUrl"
-          >
-        </label>
-
-        <label class="block mt-4 mb-1 font-medium flex flex-col">
-          <span>
-            Notion Integration Token
-
-            <span class="text-red-500">*</span>
-          </span>
-
-          <input
-            x-model="token"
-            type="text"
-            name="token"
-            placeholder="Integration Token"
-          >
-        </label>
-
-        <label class="block mt-4 mb-1 font-medium flex flex-col">
-          <span>
-            Notion data Source Id
-
-            <span class="text-red-500">*</span>
-          </span>
-
-          <input
-            x-model="dataSourceId"
-            type="text"
-            name="dataSourceId"
-            placeholder="Data source id"
-          >
-        </label>
-
-        <label class="block mt-4 mb-1 font-medium flex flex-col">
-          <span>
-            Name Property
-          </span>
-
-          <input
-            x-model="nameProperty"
-            type="text"
-            name="nameProperty"
-            placeholder="Name"
-          >
-        </label>
-
-        <label class="block mt-4 mb-1 font-medium flex flex-col">
-          <span>
-            Date Property
-          </span>
-
-          <input
-            x-model="dateProperty"
-            type="text"
-            name="dateProperty"
-            placeholder="Date"
-          >
-        </label>
-
-        <label class="block mt-4 mb-1 font-medium flex space-x-1 items-center">
-          <input
-            x-model="emojis"
-            type="checkbox"
-            name="emojis"
-          >
-
-          <span>
-            Include Page Emojis
-          </span>
-        </label>
       </form>
     </div>
   </body>

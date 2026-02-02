@@ -10,7 +10,7 @@ jobs:
     name: Build Docs App
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Node
         uses: actions/setup-node@v6
@@ -21,11 +21,11 @@ jobs:
         run: npm install
 
       - name: Build Docs
-        run: npm run build
+        run: node --run build
 
       - name: Upload Docs Folder
         id: upload_docs
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: docs
 

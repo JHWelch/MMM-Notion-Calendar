@@ -71,16 +71,10 @@ module.exports = NodeHelper.create({
     } = req.query;
 
     if (!token) {
-      res.status(422).send('"token" query parameter is required.');
-      Log.error('"token" query parameter is required.');
-
-      return false;
+      return this.validationError(res, '"token" query parameter is required.');
     }
     if (!dataSourceId) {
-      res.status(422).send('"dataSourceId" query parameter is required.');
-      Log.error('"dataSourceId" query parameter is required.');
-
-      return false;
+      return this.validationError(res, '"dataSourceId" query parameter is required.');
     }
 
     let customFilter = null;
@@ -88,10 +82,7 @@ module.exports = NodeHelper.create({
       try {
         customFilter = JSON.parse(filter);
       } catch (_) {
-        res.status(422).send('"filter" query parameter is not valid JSON.');
-        Log.error('"filter" query parameter is not valid JSON.');
-
-        return false;
+        return this.validationError(res, '"filter" query parameter is not valid JSON.');
       }
     }
 
@@ -138,5 +129,12 @@ module.exports = NodeHelper.create({
       date.getUTCMonth() + 1,
       date.getUTCDate(),
     ];
+  },
+
+  validationError (res, message) {
+    res.status(422).send(message);
+    Log.error(message);
+
+    return false;
   },
 });
